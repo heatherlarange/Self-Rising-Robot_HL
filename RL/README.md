@@ -1,24 +1,24 @@
 # robo1 getup PPO
 
-MuJoCo上の2自由度ロボット `robo1` が倒れた姿勢から起き上がるための学習済みPPOモデルです。
+A trained PPO model enabling the 2-DOF robot `robo1` (in MuJoCo) to stand up from a fallen position.
 
 ## Files
 
-このリポジトリを動かすために必要なファイルは以下です。
+The following files are required to run this repository:
 
-- `robo1_getup_ppo.zip` - Stable-Baselines3 PPOの学習済みモデル
-- `robo1_env.py` - Gymnasium/MuJoCo環境
-- `robo1.xml` - MuJoCoモデル定義
-- `assets/` - `robo1.xml`が参照するSTLメッシュ
-- `play_robo1_policy.py` - 学習済みモデルの再生
-- `eval_robo1_policy.py` - 各倒立姿勢からの評価
-- `search_all_getup.py` - 各倒れ姿勢ごとの起き上がり軌道候補を探索し、`getup_reference.py` に反映するための `BEST_SEQ` を出力
-- `getup_reference.py` - 教師データ生成に使う、各倒れ姿勢ごとのサーボ目標角waypoint列
-- `scripted_getup.py` - `getup_reference.py` に定義した起き上がり軌道をMuJoCo viewerで再生確認
-- `pretrain_robo1_from_scripted.py` - `getup_reference.py` の軌道から観測と教師actionのペアを生成し、PPO方策を事前学習
-- `train_robo1.py` - PPOによる追加学習
-- `export_policy_header.py` - 学習済みモデルからArduino用Cヘッダを生成
-- `requirements.txt` - Python依存パッケージ
+- `robo1_getup_ppo.zip` - Trained Stable-Baselines3 PPO model
+- `robo1_env.py` - Gymnasium/MuJoCo environment
+- `robo1.xml` - MuJoCo model definition
+- `assets/` - STL meshes referenced by `robo1.xml`
+- `play_robo1_policy.py` - Playback of the trained model
+- `eval_robo1_policy.py` - Evaluation from various fallen postures
+- `search_all_getup.py` - Searches for candidate get-up trajectories for each fallen posture and outputs `BEST_SEQ` for use in `getup_reference.py`
+- `getup_reference.py` - Sequences of servo target angle waypoints for each fallen posture, used for generating teacher data
+- `scripted_getup.py` - Verifies playback of the get-up trajectories defined in `getup_reference.py` using the MuJoCo viewer
+- `pretrain_robo1_from_scripted.py` - Generates observation-teacher action pairs from the trajectories in `getup_reference.py` to pre-train the PPO policy
+- `train_robo1.py` - Additional training using PPO
+- `export_policy_header.py` - Generates a C header file for Arduino from the trained model
+- `requirements.txt` - Python dependency packages
 
 ## Setup
 
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 python play_robo1_policy.py
 ```
 
-特定の初期姿勢から再生する場合:
+To play back from a specific initial pose:
 
 ```powershell
 python play_robo1_policy.py --pose roll_pos
@@ -51,32 +51,31 @@ python eval_robo1_policy.py
 
 ## Training
 
-`getup_reference.py` に定義した起き上がり教師データから初期方策を事前学習します。
+Pre-train an initial policy using the get-up demonstration data defined in `getup_reference.py`.
 
-起き上がり軌道を再探索する場合は、以下を実行します。
+To re-search for get-up trajectories, run the following:
 
 ```powershell
 python search_all_getup.py
 ```
-出力された `BEST_SEQ` または `REFERENCE_CANDIDATES` の配列を
-`getup_reference.py` の `getup_sequence_for_pose()` に反映します。
+Update the `getup_sequence_for_pose()` function in `getup_reference.py` with the generated `BEST_SEQ` or `REFERENCE_CANDIDATES` array.
 
 
-教師データから初期方策を事前学習
+Pre-train the initial policy using the demonstration data:
 
 ```powershell
 python pretrain_robo1_from_scripted.py
 ```
 
-これにより `robo1_getup_ppo.zip` が生成されます。
+This generates `robo1_getup_ppo.zip`.
 
-続けてPPOで追加学習します。
+Next, perform additional training using PPO:
 
 ```powershell
 python train_robo1.py --model-in robo1_getup_ppo.zip --timesteps 200000 --n-envs 6 --model-out robo1_getup_ppo
 ```
 
-ゼロからPPO学習する場合は `--model-in` を省略します。
+To train with PPO from scratch, omit the `--model-in` argument:
 
 ```powershell
 python train_robo1.py --timesteps 200000 --n-envs 6 --model-out robo1_getup_ppo
@@ -84,16 +83,16 @@ python train_robo1.py --timesteps 200000 --n-envs 6 --model-out robo1_getup_ppo
 
 ## Export for Arduino
 
-学習済みモデルから `policy_network.h` を生成します。
+Generate `policy_network.h` from the trained model.
 
 ```powershell
 python export_policy_header.py robo1_getup_ppo.zip -o policy_network.h
 ```
 
-生成した `policy_network.h` をArduinoスケッチ側に配置して使用します。
+Place the generated `policy_network.h` in your Arduino sketch to use it.
 
 ## Notes
 
-- `robo1_getup_ppo.zip`は`robo1.xml`と`robo1_env.py`の環境定義に依存しています。
-- `assets/`内のSTLファイルがないとMuJoCoモデルを読み込めません。
-- 実行はリポジトリ直下で行ってください。
+- `robo1_getup_ppo.zip` depends on the environment definitions in `robo1.xml` and `robo1_env.py`.
+- The MuJoCo model cannot be loaded without the STL files located in `assets/`.
+- Please execute the command from the repository root directory.

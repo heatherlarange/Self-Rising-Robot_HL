@@ -1,24 +1,21 @@
 # SelfRisingRobot
 
-2軸サーボの起き上がりロボット "poco" です。
+Robot that executes stand-up motion using two servos and reinforcement learning in MuJoCo
 
-MuJoCo上で強化学習した起き上がり動作を、M5Atom搭載の実機ロボットで動かします。
-
-詳細記事:
-
+source:
 https://homemadegarbage.com/rl13
 
 ## Contents
 
-- `3Dmodel/` - 実機ロボット用の3Dプリントモデル
-- `RL/` - MuJoCoモデル、強化学習環境、学習済みPPOモデル
-- `Arduino/` - M5Atom用スケッチとエクスポート済みポリシーネットワーク
+- `3Dmodel/` - 3D print models for the physical robot
+- `RL/` - MuJoCo model, reinforcement learning environment, and trained PPO model
+- `Arduino/` - M5Atom sketch and exported policy network
 
-各フォルダ内の詳しい使い方は、それぞれのREADMEを参照してください。
+Please refer to the README in each folder for detailed usage instructions.
 
 ## 3D Model
 
-`3Dmodel/` には実機製作用のSTLファイルを置いています。
+The `3Dmodel/` folder contains STL files for building the physical robot.
 
 - `footP.stl`
 - `arm1P.stl`
@@ -27,22 +24,22 @@ https://homemadegarbage.com/rl13
 
 ## Reinforcement Learning
 
-`RL/` にはシミュレーションと学習済みモデルを置いています。
+The `RL/` folder contains the simulation and trained model.
 
-主な内容:
+Key contents:
 
-- MuJoCoモデル
-- Gymnasium環境
-- Stable-Baselines3 PPOの学習済みモデル
-- 再生・評価スクリプト
+- MuJoCo model
+- Gymnasium environment
+- Trained Stable-Baselines3 PPO model
+- Playback and evaluation scripts
 
 ## Arduino
 
-`Arduino/` には実機制御用のM5Atomスケッチを置いています。
+The `Arduino/` folder contains the M5Atom sketch for controlling the physical robot.
 
-主な内容:
+Key contents:
 
 - `robo03.ino`
 - `policy_network.h`
 
-`policy_network.h` は学習済みポリシーをCヘッダ化したもので、M5Atom上で起き上がり動作を実行するために使います。
+`policy_network.h` is a C header file containing the trained policy, used to execute the stand-up motion on the M5Atom.

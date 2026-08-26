@@ -1,46 +1,46 @@
 # robo03
 
-M5Atomで2自由度ロボットを制御し、学習済みポリシーで起き上がり動作を行うArduinoスケッチです。
+This is an Arduino sketch that controls a 2-DOF (degrees of freedom) robot using an M5Atom and executes a "stand-up" motion based on a pre-trained policy.
 
 ## Files
 
-- `robo03/robo03.ino` - M5Atom用の制御スケッチ
-- `robo03/policy_network.h` - 学習済みポリシーをCヘッダ化したもの
+- `robo03/robo03.ino` - Control sketch for M5Atom
+- `robo03/policy_network.h` - Pre-trained policy converted into a C header file
 
-`policy_network.h` は `robo03.ino` から読み込まれるため、必ず同じ `robo03` フォルダ内に置いてください。
+Since `policy_network.h` is included by `robo03.ino`, ensure it is placed in the same `robo03` folder.
 
 ## Required Libraries
 
-Arduino IDEのライブラリマネージャなどで以下を入れてください。
+Install the following libraries using the Arduino IDE Library Manager:
 
 - M5Atom
 - Kalman
 - ESP32Servo
 
-ESP32ボード環境も必要です。
+You also need the ESP32 board environment installed.
 
 ## Upload
 
-Arduino IDEで `robo03/robo03.ino` を開き、M5Atom向けにビルドして書き込んでください。
+Open `robo03/robo03.ino` in the Arduino IDE, build it for the M5Atom, and upload the sketch.
 
 ## Wi-Fi Control
 
-起動するとM5AtomがWi-Fiアクセスポイントを作成します。
+Upon startup, the M5Atom creates a Wi-Fi access point.
 
 - SSID: `robo1`
 - Password: `password`
 - URL: `http://192.168.42.1`
 
-ブラウザからアクセスすると、サーボの手動調整、起き上がり開始/停止、自動起き上がりのON/OFFを操作できます。
+Accessing this URL via a web browser allows you to manually adjust the servos, start/stop the stand-up motion, and toggle automatic stand-up mode.
 
 ## Button
 
-M5Atom本体ボタンでも起き上がり動作を開始できます。
+You can also initiate the stand-up action using the button on the M5Atom unit itself.
 
-起き上がり中にボタンを押すと、起き上がり動作を停止して手動モードに戻ります。
+Pressing the button while the stand-up action is in progress stops the movement and returns the device to manual mode.
 
 ## Notes
 
-- サーボ1はGPIO 26、サーボ2はGPIO 32に接続する想定です。
-- サーボのオフセットとパルス幅はWeb画面から調整でき、Preferencesに保存されます。
-- `policy_network.h` は生成済みのポリシーネットワークです。別の学習結果を使う場合は、このファイルを差し替えてください。
+- Servo 1 is intended to be connected to GPIO 26, and Servo 2 to GPIO 32.
+- Servo offsets and pulse widths can be adjusted via the web interface and are saved to Preferences.
+- `policy_network.h` contains a pre-generated policy network. Please replace this file if you wish to use a different set of training results.
